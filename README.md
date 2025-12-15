@@ -17,7 +17,7 @@ An end-to-end Power BI project demonstrating how to transform messy real-world d
 - [Interactive Dashboard Features](#interactive-dashboard-features)
 - [Key Business Insights](#key-business-insights)
 - [Final Outcome](#final-outcome)
-### Project Overview
+### 📘 Project Overview
 Pareto analysis (80/20 rule) is a common analytical technique, but most implementations are static.
 
 - This project demonstrates how to build a fully dynamic Pareto dashboard in Power BI that allows users to:
@@ -26,3 +26,27 @@ Pareto analysis (80/20 rule) is a common analytical technique, but most implemen
   - Dynamically adjust the Pareto threshold (48%–53%)
   - Automatically highlight the critical contributors
   - All calculations are measure-driven, not column-based.
+### 📂 Dataset Description
+Raw Input Data (Messy)
+- The original CSV file contained:
+  - Duplicate records
+  - Inconsistent casing (cust-002, CUST002)
+  - Inconsistent separators (-, ., spaces)
+  - Missing values (?, ??)
+  - Partial records
+  - Mixed numeric/text values
+- Columns:
+  - Customer
+  - Product
+  - Supplier
+  - Revenue
+  - Complaints
+  - Delivery Delay (days)
+### 🧹 Data Cleaning Using Power Query
+Power Query is used as the single source of truth for all data standardization.
+- Key Cleaning Objectives
+  - Normalize Customer, Product, Supplier IDs
+  - Remove duplicate business records
+  - Convert invalid values (?) to clean numeric values
+  - Ensure consistent formatting for reporting
+  - Prepare fact-level data for Pareto logic
