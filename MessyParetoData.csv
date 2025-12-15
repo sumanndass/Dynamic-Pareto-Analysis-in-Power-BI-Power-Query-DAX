@@ -1,0 +1,25 @@
+Customer,Product,Supplier,Revenue,Complaints,Delivery Delay (days)
+Cust-001,Prod A,SUP-1,12000,5,15
+Cust-001 ,Prod A ,SUP-1,12000,5,15
+cust-002,prod B, sup-2,8500,12,8
+CUST002,Product-B,SUP2,8500,12,8
+cust-003,Prod-C,SUP-3,2500,1,6
+cust-004,,SUP-4,3000, ,12
+,Prod-D,SUP-4,4500,9,12
+cust-005,Prod D,SUP-4,4500,9,12
+cust-006,Prod-E,,5000,2,3
+cust-007,Prod?E,SUP-5,6000,??,5
+cust-008,Prod F,Sup-6,7000,6, ?
+Cust-009,Product F,SUP-6,7000,6,9
+cust-010,Prod-G,SUP-7,1000,0,18
+cust-011,Prod H,SUP-1,20000,18,30
+Cust-011,Prod H,SUP-1,20000,18,30
+cust-012,Prod h,SUP1,21000,17,29
+cust-013,Prod I,SUP-8,100,45,22
+cust-014,Prod j,SUP-9,?,16,10
+cust-015,prod-j,SUP-9,1500,14,11
+cust-016,Prod-K,SUP.10,6500,8,?
+cust-017,Prod K,SUP-10,6400,8,12
+cust-018,ProdL,SUP-11,12000,25,20
+cust-019,ProdL,SUP-11,12000,25,20
+cust-020,Prod M,SUP12,5500,30,19
