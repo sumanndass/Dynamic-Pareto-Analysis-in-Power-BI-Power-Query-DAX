@@ -53,15 +53,14 @@ Power Query is used as the single source of truth for all data standardization.
 ### 🧠 Power Query (M) Logic Explained
 - 1️⃣ Source
   ```m 
-  Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None])
+  = Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None])
   ```
   - **Note:** this is not the best wat to do fetch source rather make a blank query and name it "Path" then use this as a parameter and then use this parameter to fetch source.
-- 2️⃣ Trim All Columns Dynamically
+- 2️⃣ Duplicate the Source
   ```m
-  Table.TransformColumns(
-    Source,
-    List.Transform(ColList, each {_, each Text.Trim(_)})
-  )
+  let
+      Source = Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Columns=6, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+      Custom1 = Table.ColumnNames(Source)
+  in
+      Custom1
   ```
-  - ✔ Removes leading/trailing spaces from all columns
-  - ✔ Prevents hidden duplicates
