@@ -123,3 +123,62 @@ Power Query is used as the single source of truth for all data standardization.
     - Extract letters + digits
     - Rebuild in consistent format
   - ✔ Ensures accurate grouping & ranking
+- 7️⃣ Product & Supplier Normalization
+  ```m
+  = Table.TransformColumns(
+    #"Customer Col Fix",
+    {
+        {
+            "Product",
+            each
+                let
+                    first = Text.Start(_, 4),
+                    last = Text.End(_, 1),
+                    combine = Text.Combine({first, last}, " "),
+                    proper = Text.Proper(combine)
+                in
+                    proper
+        },
+        {
+            "Supplier",
+            each
+                let
+                    first = Text.Upper(Text.Start(_, 3)),
+                    last = Text.End(_, 1),
+                    combine = Text.Combine({first, last}, " ")                
+                in
+                    combine
+        }
+    }
+  )
+  ```
+  ```m
+  Prod-A → Prod A
+  SUP.10 → SUP 10
+  ```
+  - ✔ Prevents slicer duplication
+  - ✔ Improves visual clarity
+- 8️⃣ Remove Duplicates & Invalid Rows
+  ```m
+  = Table.Distinct(#"Product, Supplier Col Fix")
+  ```
+  - ✔ Eliminates duplicate business records
+  - ✔ Filters blank identifiers
+- 9️⃣ Filtering Rows
+  ```m
+  = Table.SelectRows(#"Removed Duplicates", each ([Customer] <> "") and ([Product] <> " ") and ([Supplier] <> " "))
+  ```
+- 1️⃣0️⃣ Replace Missing Numerics with Zero
+  ```m
+  = Table.ReplaceValue(#"Filtered Rows","","0",Replacer.ReplaceValue,{"Revenue", "Complaints", "Delivery Delay (days)"})
+  ```
+  - ✔ Enables numeric aggregation
+  - ✔ Prevents DAX calculation errors
+- 1️⃣1️⃣ Final Data Types
+  ```m
+  = Table.TransformColumnTypes(#"Replaced Value",{{"Customer", type text}, {"Product", type text}, {"Supplier", type text}, {"Revenue", Int64.Type}, {"Complaints", Int64.Type}, {"Delivery Delay (days)", Int64.Type}})
+  ```
+  ```m
+  = Table.TransformColumnTypes(#"Replaced Value",{{"Customer", type text}, {"Product", type text}, {"Supplier", type text}, {"Revenue", Int64.Type}, {"Complaints", Int64.Type}, {"Delivery Delay (days)", Int64.Type}}, [MissingField = MissingField.Ignore]) // newer version May-2025
+  ```
+  - ✔ Model-ready dataset
