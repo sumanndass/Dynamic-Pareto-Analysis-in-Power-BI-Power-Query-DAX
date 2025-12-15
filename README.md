@@ -55,7 +55,7 @@ Power Query is used as the single source of truth for all data standardization.
   ```m 
   Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None])
   ```
-  - Note: this is not the best wat to do fetch source rather make a blank query and name it "Path" then use this as a parameter and then use this parameter to fetch source.
+  - **Note:** this is not the best wat to do fetch source rather make a blank query and name it "Path" then use this as a parameter and then use this parameter to fetch source.
 - 2️⃣ Trim All Columns Dynamically
   ```m
   Table.TransformColumns(
