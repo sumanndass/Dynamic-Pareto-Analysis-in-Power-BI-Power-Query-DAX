@@ -27,7 +27,7 @@ Pareto analysis (80/20 rule) is a common analytical technique, but most implemen
   - Automatically highlight the critical contributors
   - All calculations are measure-driven, not column-based.
 ### 📂 Dataset Description
-Raw Input Data (Messy)[https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/MessyParetoData.csv]
+[Raw Input Data (Messy)](https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/MessyParetoData.csv)
 - The original CSV file contained:
   - Duplicate records
   - Inconsistent casing (cust-002, CUST002)
