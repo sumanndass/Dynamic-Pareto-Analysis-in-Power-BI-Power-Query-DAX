@@ -2,13 +2,13 @@
 An end-to-end Power BI project demonstrating how to transform messy real-world data into a fully dynamic Pareto Analysis dashboard using Power Query (M) and advanced DAX.
 <br>
 This project focuses on:
-  <br> &emsp; Robust data cleaning
-  <br> &emsp; Normalization of inconsistent identifiers
-  <br> &emsp; Dynamic ranking & cumulative calculations
-  <br> &emsp; Interactive Pareto thresholds
-  <br> &emsp; Industry-standard visualization patterns
-# 📑 Table of Contents
-
+- Robust data cleaning
+- Normalization of inconsistent identifiers
+- Dynamic ranking & cumulative calculations
+- Interactive Pareto thresholds
+- Industry-standard visualization patterns
+## 📑 Table of Contents
+- [Overview](#overview)
 Project Overview
 
 Dataset Description
