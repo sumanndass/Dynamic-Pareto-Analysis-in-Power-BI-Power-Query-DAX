@@ -64,3 +64,62 @@ Power Query is used as the single source of truth for all data standardization.
   in
       Custom1
   ```
+  - ✔ to find the column names and and make it dynamic for rest of the codes
+- 3️⃣ Trim All Columns Dynamically
+  ```m
+  = Table.TransformColumns(
+    Source,
+    List.Transform(ColList, each {_, each Text.Trim(_)})
+  )
+  ```
+  - ✔ Removes leading/trailing spaces from all columns
+  - ✔ Prevents hidden duplicates
+- 4️⃣ Promote Headers
+  ```m
+  = Table.PromoteHeaders(#"Trim Each Col", [PromoteAllScalars=true])
+  ```
+- 5️⃣ Replace Invalid Characters (?, ??)
+  ```m
+  = Table.TransformColumns(
+    #"Promoted Headers",
+    List.Transform(
+        Table.ColumnNames(#"Promoted Headers"),
+        each { _, (v) => if v is null then null else if v is text then Text.Replace(v, "?", "") else v }
+    )
+  )
+  ```
+- 6️⃣ Customer Column Standardization  
+  ```m
+  = Table.TransformColumns(
+    #"Replace ? and ??",
+    {{"Customer", each 
+        let
+            clean = Text.Upper(Text.Replace(_, "-", " ")),
+            spaced = Text.Combine(
+                        List.Transform(
+                            Text.SplitAny(clean, " "),
+                            each 
+                                let
+                                    letters = Text.Select(_, {"A".."Z"}),
+                                    digits = Text.Select(_, {"0".."9"})
+                                in
+                                    Text.Combine({letters, digits}, " ")
+                        )
+                    , " "),
+            trimmed = Text.Trim(Text.Combine(List.Select(Text.Split(spaced, " "), each _ <> ""), " ")),
+            proper = Text.Proper(trimmed)
+        in
+            proper
+    }}
+  )
+  ```
+  ```m
+  Cust-001 → Cust 001
+  CUST002 → Cust 002
+  ```
+  - Logic applied:
+    - Uppercase
+    - Remove separators
+    - Extract letters + digits
+    - Rebuild in consistent format
+  - ✔ Ensures accurate grouping & ranking
