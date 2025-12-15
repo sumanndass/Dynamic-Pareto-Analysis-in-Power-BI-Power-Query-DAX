@@ -182,3 +182,69 @@ Power Query is used as the single source of truth for all data standardization.
   = Table.TransformColumnTypes(#"Replaced Value",{{"Customer", type text}, {"Product", type text}, {"Supplier", type text}, {"Revenue", Int64.Type}, {"Complaints", Int64.Type}, {"Delivery Delay (days)", Int64.Type}}, [MissingField = MissingField.Ignore]) // newer version May-2025
   ```
   - ✔ Model-ready dataset
+### 🧩 Data Modeling
+- This project uses a single fact table approach:
+  - Suitable for Pareto analysis
+  - Avoids unnecessary complexity
+  - Optimized for dynamic ranking
+- All calculations are performed using measures, not calculated columns.
+### 📐 Dynamic Pareto Logic (DAX)
+- Core Concepts Used
+  - RANKX
+  - ALLSELECTED
+  - Dynamic SWITCH logic
+  - Cumulative percentage calculation
+  - Closest-to-target threshold logic
+- Key Measures
+  - Dynamic Rank
+  - Cumulative Value
+  - Cumulative Percentage
+  - Pareto Highlight Flag
+  - Dynamic Titles
+- ✔ Ranking updates per slicer
+- ✔ No hard-coded logic
+- ✔ No static thresholds
+### 🎛 Interactive Dashboard Features (User Controls)
+- Category Selector
+  - Customer
+  - Product
+  - Supplier
+- Metric Selector
+  - Total Revenue
+  - Total Complaints
+  - Total Delivery Delay
+- Pareto Threshold Selector
+  - 48% – 53%
+### 📊 Visual Components
+- Dynamic Pareto Bar + Line Chart
+- Highlighted critical contributors
+- Dynamic matrix showing:
+  - Rank
+  - Cumulative Value
+  - Cumulative %
+- Fully dynamic titles:
+  - Top 5 out of 18 Customers account for 58% of Total Revenue (₹77,000)
+### 📈 Key Business Insights
+- From the dashboard:
+  - 58% of total revenue comes from just 5 customers
+  - Revenue concentration risk is clearly visible
+  - Priority customers are immediately identifiable
+  - Switching metrics reveals different Pareto drivers
+- This mirrors real enterprise analytics use cases.
+### ✅ Final Outcome
+- ✔ Messy real-world data cleaned using Power Query
+- ✔ Fully dynamic Pareto analysis using DAX
+- ✔ Interactive slicers and thresholds
+- ✔ Production-quality Power BI dashboard
+- ✔ Reusable design for any Pareto scenario
+### 🚀 Conclusion
+- This project demonstrates how Power BI + Power Query + DAX can be used to:
+  - Handle dirty datasets
+  - Build robust analytical logic
+  - Deliver executive-ready insights
+- It goes beyond textbook Pareto charts and reflects real BI engineering practices.
+### 🔗 Possible Extensions
+- Add drill-through pages
+- Convert to star schema
+- Publish as Power BI template
+- Add performance optimization benchmarks
