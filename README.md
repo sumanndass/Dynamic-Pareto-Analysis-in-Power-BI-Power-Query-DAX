@@ -203,7 +203,7 @@ Power Query is used as the single source of truth for all data standardization.
   ```
   - ✔ Model-ready dataset
 - 1️⃣2️⃣ Final Cleaned Dataset
-  - [Final](https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/CleanedParetoData.xlsx)
+  - [Final Dataset](https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/CleanedParetoData.xlsx)
   - Example
     ```m
     | Customer | Product | Supplier | Revenue | Complaints | Delivery Delay |
