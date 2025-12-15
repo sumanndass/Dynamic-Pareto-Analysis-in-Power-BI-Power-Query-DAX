@@ -7,6 +7,19 @@ An end-to-end Power BI project demonstrating how to transform messy real-world d
   - Dynamic ranking & cumulative calculations
   - Interactive Pareto thresholds
   - Industry-standard visualization patterns
+## 🔍 Problem Statement
+Pareto (80/20) analysis is widely used to identify the vital few contributors driving the majority of impact — revenue, complaints, delays, etc.
+- However, in real-world projects:
+  - Data is messy
+  - Categories change (Customer / Product / Supplier)
+  - Metrics change (Revenue / Complaints / Delay)
+  - Pareto thresholds are not fixed (not always 80%)
+- Most examples online show static, hard-coded Pareto charts that:
+  - Break when slicers change
+  - Fail with duplicates
+  - Produce incorrect cumulative percentages
+  - Cannot dynamically highlight the “vital few”
+- This project demonstrates how to build a **fully dynamic**, **production-ready Pareto Analysis** in **Power BI**, starting from **messy CSV data**.
 ## 📑 Table of Contents
 - [Project Overview](#project-overview)
 - [Dataset Description](#dataset-description)
@@ -30,11 +43,18 @@ Pareto analysis (80/20 rule) is a common analytical technique, but most implemen
 [Raw Input Data (Messy)](https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/MessyParetoData.csv)
 - The original CSV file contained:
   - Duplicate records
-  - Inconsistent casing (cust-002, CUST002)
+  - Inconsistent casing (cust-002, CUST002, Cust-02)
   - Inconsistent separators (-, ., spaces)
   - Missing values (?, ??)
   - Partial records
   - Mixed numeric/text values
+  - Zero values mixed with missing values
+  - Examples
+    ```m
+    cust-002   prod B   sup-2   8500   12   8
+    CUST002   Product-B   SUP2   8500   12   8
+    cust-007  Prod?E   SUP-5   6000   ??   5
+    ```
 - Columns:
   - Customer
   - Product
@@ -182,6 +202,19 @@ Power Query is used as the single source of truth for all data standardization.
   = Table.TransformColumnTypes(#"Replaced Value",{{"Customer", type text}, {"Product", type text}, {"Supplier", type text}, {"Revenue", Int64.Type}, {"Complaints", Int64.Type}, {"Delivery Delay (days)", Int64.Type}}, [MissingField = MissingField.Ignore]) // newer version May-2025
   ```
   - ✔ Model-ready dataset
+- 1️⃣2️⃣ Final Cleaned Dataset
+  - Final
+  - Example
+    ```m
+    | Customer | Product | Supplier | Revenue | Complaints | Delivery Delay |
+    | -------- | ------- | -------- | ------: | ---------: | -------------: |
+    | Cust 012 | Prod H  | SUP 1    |   21000 |         17 |             29 |
+    | Cust 011 | Prod H  | SUP 1    |   20000 |         18 |             30 |
+    | Cust 001 | Prod A  | SUP 1    |   12000 |          5 |             15 |
+    | Cust 018 | Prod L  | SUP 1    |   12000 |         25 |             20 |
+    | Cust 019 | Prod L  | SUP 1    |   12000 |         25 |             20 |
+    | ...      | ...     | ...      |     ... |        ... |            ... |
+    ```
 ### 🧩 Data Modeling
 - This project uses a single fact table approach:
   - Suitable for Pareto analysis
