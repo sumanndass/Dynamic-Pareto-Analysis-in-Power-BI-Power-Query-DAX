@@ -50,3 +50,14 @@ Power Query is used as the single source of truth for all data standardization.
   - Convert invalid values (?) to clean numeric values
   - Ensure consistent formatting for reporting
   - Prepare fact-level data for Pareto logic
+### 🧠 Power Query (M) Logic Explained
+- 1️⃣ Source
+  - = Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None])
+  - Note: this is not the best wat to do fetch source rather make a blank query and name it "Path" then use this as a parameter and then use this parameter to fetch source.
+- 2️⃣ Trim All Columns Dynamically
+  ```power query
+  Table.TransformColumns(
+    Source,
+    List.Transform(ColList, each {_, each Text.Trim(_)})
+  )
+  ```
