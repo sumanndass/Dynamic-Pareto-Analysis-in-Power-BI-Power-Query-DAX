@@ -263,11 +263,35 @@ Power Query is used as the single source of truth for all data standardization.
       ```dax
       _TotalDeliveryDelay = SUM ( FactData[Delivery Delay (days)] )
       ```
-      🔹 Dynamic Formatting
       ```dax
-      "0 days"
+      "0 days" // Dynamic Formatting
       ```
-    - s
+  - 🟦 2. Dynamic Metric Selector
+    - Allows the user to switch between Revenue / Complaints / Delay.
+      ```dax
+      y-axis = {
+          ("Total Revenue", NAMEOF(FactData[_TotalRevenue]), 0),
+          ("Total Complaints", NAMEOF(FactData[_TotalComplaints]), 1),
+          ("Total Delivery Delay", NAMEOF(FactData[_TotalDeliveryDelay]), 2)
+      }
+      ```
+      - ✔ Used across all visuals
+      - ✔ Prevents duplicated DAX logic
+  - 🟦 3. Dynamic Category Selector
+    - Controls whether Pareto is calculated by: Customer or Product or Supplier
+      ```dax
+      x-axis = {
+          ("Customer", NAMEOF(FactData[Customer]), 0),
+          ("Product", NAMEOF(FactData[Product]), 1),
+          ("Supplier", NAMEOF(FactData[Supplier]), 2)    
+      }
+      ```
+      - **Note:** Category switching is implemented using field parameters / disconnected tables for visuals, while DAX relies on the selected order.
+  - Matrix Visual
+    <img width="587" height="460" alt="image" src="https://github.com/user-attachments/assets/45a57a35-4bdb-439b-bfa5-acc37f23fdc9" />
+
+    - Used in: Pareto bar chart, Matrix (Rank column), Highlight logic
+  - s
       
 - Dynamic Pareto Bar + Line Chart
 - Highlighted critical contributors
