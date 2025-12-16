@@ -1,9 +1,9 @@
 # 📊 Dynamic Pareto Analysis in Power BI (Power Query + DAX)
 An end-to-end Power BI project demonstrating how to transform messy real-world data into a fully dynamic Pareto Analysis dashboard using Power Query (M) and advanced DAX.
 <br>
-<img width="893" height="504" alt="image" src="https://github.com/user-attachments/assets/598d2ca5-73be-4ba1-8482-fdcf056f728c" />
-<img width="901" height="507" alt="image" src="https://github.com/user-attachments/assets/951374ce-a2c3-42cb-a835-f5276c58b2a0" />
-<img width="893" height="503" alt="image" src="https://github.com/user-attachments/assets/a0c6a804-bdb2-4ff3-b981-1cd8f9d2614f" />
+<img width="893" height="503" alt="image" src="https://github.com/user-attachments/assets/8a4d49d2-9c62-46eb-a69a-51a302f9405c" />
+<img width="893" height="503" alt="image" src="https://github.com/user-attachments/assets/b89442e7-a442-4f1b-b8b4-a69f9e370ef2" />
+<img width="890" height="501" alt="image" src="https://github.com/user-attachments/assets/48b744f9-308f-498f-b0a6-7029d5d5b9ca" />
 <br>
 - This project focuses on :
   - Robust data cleaning
