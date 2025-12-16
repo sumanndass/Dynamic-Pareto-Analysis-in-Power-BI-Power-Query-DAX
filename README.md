@@ -25,9 +25,9 @@ Pareto (80/20) analysis is widely used to identify the vital few contributors dr
   - Cannot dynamically highlight the “vital few”
 - This project demonstrates how to build a **fully dynamic**, **production-ready Pareto Analysis** in **Power BI**, starting from **messy CSV data**.
 ## 📑 Table of Contents
-- [Project Overview](#project-overview)
-- [Dataset Description](#dataset-description)
-- [Data Cleaning Using Power Query](#data-cleaning-using-power-query)
+- [📘 Project Overview](#📘-Project-Overview)
+- [📂 Dataset Description](#📂-Dataset-Description)
+- [🧹 Data Cleaning Using Power Query](#🧹-Data-Cleaning-Using-Power-Query)
 - [Power Query (M) Logic Explained](#power-query-(m)-logic-explained)
 - [Data Modeling](#data-modeling)
 - [Dynamic Pareto Logic (DAX)](#dynamic-pareto-logic-(dax))
