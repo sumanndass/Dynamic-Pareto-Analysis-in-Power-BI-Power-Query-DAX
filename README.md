@@ -275,8 +275,8 @@ Power Query is used as the single source of truth for all data standardization.
           ("Total Delivery Delay", NAMEOF(FactData[_TotalDeliveryDelay]), 2)
       }
       ```
-      - ✔ Used across all visuals
-      - ✔ Prevents duplicated DAX logic
+    - ✔ Used across all visuals
+    - ✔ Prevents duplicated DAX logic
   - 🟦 3. Dynamic Category Selector
     - Controls whether Pareto is calculated by: Customer or Product or Supplier
       ```dax
@@ -286,12 +286,524 @@ Power Query is used as the single source of truth for all data standardization.
           ("Supplier", NAMEOF(FactData[Supplier]), 2)    
       }
       ```
-      - **Note:** Category switching is implemented using field parameters / disconnected tables for visuals, while DAX relies on the selected order.
-  - 🟩 Matrix Visual
-    <br>
-    <img width="587" height="460" alt="image" src="https://github.com/user-attachments/assets/45a57a35-4bdb-439b-bfa5-acc37f23fdc9" />
-
+    - **Note:** Category switching is implemented using field parameters / disconnected tables for visuals, while DAX relies on the selected order.
+  - 🟩 4. Rank Measure (Core Pareto Logic)
     - Used in: Pareto bar chart, Matrix (Rank column), Highlight logic
+      ```dax
+      _Rank = 
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      RETURN
+      SWITCH(
+          TRUE(),
+          xaxis_ord = 0 && ISINSCOPE(FactData[Customer]),
+          RANKX(
+              ALLSELECTED(FactData[Customer]),
+              SWITCH(
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              ),
+              ,
+              DESC,
+              Dense
+          ),
+          xaxis_ord = 1 && ISINSCOPE(FactData[Product]),
+          RANKX(
+              ALLSELECTED(FactData[Product]),
+              SWITCH(
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              ),
+              ,
+              DESC,
+              Dense
+          ),
+          xaxis_ord = 2 && ISINSCOPE(FactData[Supplier]),
+          RANKX(
+              ALLSELECTED(FactData[Supplier]),
+              SWITCH(
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              ),
+              ,
+              DESC,
+              Dense
+          )
+      )
+    - ✔ Respects slicers
+    - ✔ Recalculates dynamically
+    - ✔ No static ranking
+  - 🟩 5. Cumulative Value Measure
+    - Calculates running total based on rank order.
+      ```dax
+      _CumVal = 
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      VAR rn = [_Rank]
+      RETURN
+      SWITCH(
+          TRUE(),
+          xaxis_ord = 0 && ISINSCOPE(FactData[Customer]),
+          CALCULATE(
+              SWITCH(        
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              )
+              ,
+              FILTER(
+                  ALLSELECTED(FactData[Customer]),
+                  [_Rank] <= rn
+              )
+          ),
+          xaxis_ord = 1 && ISINSCOPE(FactData[Product]),
+          CALCULATE(
+              SWITCH(        
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              )
+              ,
+              FILTER(
+                  ALLSELECTED(FactData[Product]),
+                  [_Rank] <= rn
+              )
+          ),
+          xaxis_ord = 2 && ISINSCOPE(FactData[Supplier]),
+          CALCULATE(
+              SWITCH(        
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              )
+              ,
+              FILTER(
+                  ALLSELECTED(FactData[Supplier]),
+                  [_Rank] <= rn
+              )
+          ),
+          SWITCH(        
+              yaxis_ord,
+              0, [_TotalRevenue],
+              1, [_TotalComplaints],
+              2, [_TotalDeliveryDelay]
+              )
+      )
+      ```
+    - Used in: Pareto line, Matrix (Cumulative Value)
+  - 🟩 6. Cumulative Percentage Measure
+    - Converts cumulative value into percentage of total.
+      ```dax
+      _CumVal % = 
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      RETURN
+      DIVIDE(
+          [_CumVal],
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0,
+              CALCULATE(        
+                  SWITCH(
+                  yaxis_ord,
+                  0, [_TotalRevenue],
+                  1, [_TotalComplaints],
+                  2, [_TotalDeliveryDelay]
+                  ),
+                  ALLSELECTED(FactData[Customer])
+              ),
+              xaxis_ord = 1,
+              CALCULATE(        
+                  SWITCH(
+                  yaxis_ord,
+                  0, [_TotalRevenue],
+                  1, [_TotalComplaints],
+                  2, [_TotalDeliveryDelay]
+                  ),
+                  ALLSELECTED(FactData[Product])
+              ),
+              xaxis_ord = 2,
+              CALCULATE(        
+                  SWITCH(
+                  yaxis_ord,
+                  0, [_TotalRevenue],
+                  1, [_TotalComplaints],
+                  2, [_TotalDeliveryDelay]
+                  ),
+                  ALLSELECTED(FactData[Supplier])
+              )
+          )
+      )
+      ```
+    - ✔ Automatically adapts to: Category, Metric, Filters
+  - 🟨 7. Pareto Threshold Selector
+    - Allows user to dynamically choose the Pareto cutoff.
+      ```dax
+      _Pareto Threshold = SELECTEDVALUE ( 'Pareto Max Val'[Pareto Max Val], 0.8 )
+      ```
+    - Examples: 0.48 → 48% or 0.50 → 50% or 0.53 → 53%
+  - 🟨 8. Pareto Highlight Flag (Bar Coloring)
+    - Controls green/red/orange vs grey bars in Pareto chart.
+      ```dax
+      _Pareto Color = 
+      VAR target = SELECTEDVALUE('Pareto Max Val'[Pareto Max Val], 0.8)
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR xaxis0 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Customer]),
+                  "cum", [_CumVal %],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis1 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Product]),
+                  "cum", [_CumVal %],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis2 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Supplier]),
+                  "cum", [_CumVal %],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      
+      VAR paretomax = 
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0, MAXX ( xaxis0, [cum] ),
+              xaxis_ord = 1, MAXX ( xaxis1, [cum] ),
+              xaxis_ord = 2, MAXX ( xaxis2, [cum] )
+          )
+      
+      RETURN
+          SWITCH(
+              TRUE(),
+              yaxis_ord = 0 && [_CumVal %] <= paretomax, "#6BFA7A",
+              yaxis_ord = 1 && [_CumVal %] <= paretomax, "#FA6C6C",
+              yaxis_ord = 2 && [_CumVal %] <= paretomax, "#FAD16A",
+              "#F2F2F2"
+              )
+    - Used as: Conditional formatting, Legend / color rule
+  - 🟥 9. Closest Pareto Point Measure
+    - Identifies the last bar closest to the selected threshold.
+      ```dax
+      _Pareto Cum % = 
+      VAR target = SELECTEDVALUE('Pareto Max Val'[Pareto Max Val], 0.8)
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR xaxis0_paretomax = 
+          MAXX(
+              TOPN (
+                  1,
+                  ADDCOLUMNS (
+                      ALLSELECTED(FactData[Customer]),
+                      "cum", [_CumVal %],
+                      "diff", ABS ( [_CumVal %] - target )
+                  ),
+                  [diff], ASC
+              ),
+              [cum]
+          )
+      VAR xaxis1_paretomax = 
+          MAXX(
+              TOPN (
+                  1,
+                  ADDCOLUMNS (
+                      ALLSELECTED(FactData[Product]),
+                      "cum", [_CumVal %],
+                      "diff", ABS ( [_CumVal %] - target )
+                  ),
+                  [diff], ASC
+              ),
+              [cum]
+          )
+      VAR xaxis2_paretomax = 
+          MAXX(
+              TOPN (
+                  1,
+                  ADDCOLUMNS (
+                      ALLSELECTED(FactData[Supplier]),
+                      "cum", [_CumVal %],
+                      "diff", ABS ( [_CumVal %] - target )
+                  ),
+                  [diff], ASC
+              ),
+              [cum]
+          )
+      
+      VAR xaxis0_lastcust =
+          MAXX(
+              TOPN (
+                  1,
+                  FILTER ( ALLSELECTED(FactData[Customer]), [_CumVal %] <= xaxis0_paretomax ),
+                  [_Rank], DESC
+              ),
+              FactData[Customer]
+          )
+      VAR xaxis1_lastcust =
+          MAXX(
+              TOPN (
+                  1,
+                  FILTER ( ALLSELECTED(FactData[Product]), [_CumVal %] <= xaxis1_paretomax ),
+                  [_Rank], DESC
+              ),
+              FactData[Product]
+          )
+      VAR xaxis2_lastcust =
+          MAXX(
+              TOPN (
+                  1,
+                  FILTER ( ALLSELECTED(FactData[Supplier]), [_CumVal %] <= xaxis2_paretomax ),
+                  [_Rank], DESC
+              ),
+              FactData[Supplier]
+          )
+      
+      VAR curcust = 
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0, SELECTEDVALUE ( FactData[Customer] ),
+              xaxis_ord = 1, SELECTEDVALUE ( FactData[Product] ),
+              xaxis_ord = 2, SELECTEDVALUE ( FactData[Supplier] )
+          )
+      RETURN
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0 && xaxis0_lastcust = curcust, [_CumVal %],
+              xaxis_ord = 1 && xaxis1_lastcust = curcust, [_CumVal %],
+              xaxis_ord = 2 && xaxis2_lastcust = curcust, [_CumVal %]
+          )
+    - Used for: Marker dot, Vertical reference line, Title calculations
+  - 🟪 10. Dynamic Matrix Title Measure
+    ```dax
+    _Matrix Title = 
+    VAR xaxisName =
+        SWITCH(
+            TRUE(),
+            SELECTEDVALUE('x-axis'[x-axis Order]) = 0, "Customer",
+            SELECTEDVALUE('x-axis'[x-axis Order]) = 1, "Product",
+            SELECTEDVALUE('x-axis'[x-axis Order]) = 2, "Supplier"
+        )
+    VAR yaxisName =
+        SWITCH(
+            TRUE(),
+            SELECTEDVALUE('y-axis'[y-axis Order]) = 0, "Revenue",
+            SELECTEDVALUE('y-axis'[y-axis Order]) = 1, "Complaints",
+            SELECTEDVALUE('y-axis'[y-axis Order]) = 2, "Delivery Delays"
+        )
+    RETURN
+    xaxisName & " Performance by " & yaxisName
+    ```
+  - 🟪 11. Dynamic Pareto Title Measure
+    - Displayed above the chart.
+      ```dax
+      Top {_Chart Title Selected No} out of {_Chart Title Total No} {_x-axis Name} account for {_Chart Title %} of {_y-axis Name} ({_Chart Title Val})
+      ```
+      ```dax
+      _Chart Title Selected No = 
+      VAR target = SELECTEDVALUE ( 'Pareto Max Val'[Pareto Max Val], 0.8 )
+      VAR xaxis_ord = SELECTEDVALUE ( 'x-axis'[x-axis Order] )
+      
+      VAR CustTbl =
+          ADDCOLUMNS (
+              ALLSELECTED ( FactData[Customer] ),
+              "cum", [_CumVal %],
+              "diff", ABS ( [_CumVal %] - target )
+          )
+      
+      VAR ProdTbl =
+          ADDCOLUMNS (
+              ALLSELECTED ( FactData[Product] ),
+              "cum", [_CumVal %],
+              "diff", ABS ( [_CumVal %] - target )
+          )
+      
+      VAR SuppTbl =
+          ADDCOLUMNS (
+              ALLSELECTED ( FactData[Supplier] ),
+              "cum", [_CumVal %],
+              "diff", ABS ( [_CumVal %] - target )
+          )
+      
+      VAR ParetoMax =
+          SWITCH (
+              TRUE (),
+              xaxis_ord = 0, MAXX ( TOPN ( 1, CustTbl, [diff], ASC ), [cum] ),
+              xaxis_ord = 1, MAXX ( TOPN ( 1, ProdTbl, [diff], ASC ), [cum] ),
+              xaxis_ord = 2, MAXX ( TOPN ( 1, SuppTbl, [diff], ASC ), [cum] )
+          )
+      
+      RETURN
+      SWITCH (
+          TRUE (),
+          xaxis_ord = 0,
+              COUNTROWS ( FILTER ( CustTbl, [cum] <= ParetoMax ) ),
+          xaxis_ord = 1,
+              COUNTROWS ( FILTER ( ProdTbl, [cum] <= ParetoMax ) ),
+          xaxis_ord = 2,
+              COUNTROWS ( FILTER ( SuppTbl, [cum] <= ParetoMax ) )
+      )
+      ```
+      ```dax
+      _Chart Title Total No = 
+      VAR xaxis_ord = SELECTEDVALUE ( 'x-axis'[x-axis Order] )
+      RETURN
+          SWITCH (
+              TRUE (),
+              xaxis_ord = 0, COUNTROWS(VALUES(FactData[Customer])),
+              xaxis_ord = 1, COUNTROWS(VALUES(FactData[Product])),
+              xaxis_ord = 2, COUNTROWS(VALUES(FactData[Supplier]))
+          )
+      ```
+      ```dax
+      _x-axis Name = 
+      var ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      RETURN
+          SWITCH(
+              TRUE(),
+              ord = 0, "Customers",
+              ord = 1, "Products",
+              ord = 2, "Suppliers"
+              )
+      ```
+      ```dax
+      _Chart Title % = 
+      VAR target = SELECTEDVALUE('Pareto Max Val'[Pareto Max Val], 0.8)
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR xaxis0 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Customer]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis1 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Product]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis2 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Supplier]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      
+      RETURN
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0, MAXX ( xaxis0, [cum%] ),
+              xaxis_ord = 1, MAXX ( xaxis1, [cum%] ),
+              xaxis_ord = 2, MAXX ( xaxis2, [cum%] )
+          )
+      ```
+      ```dax
+      _y-axis Name = 
+      var ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      RETURN
+          SWITCH(
+              TRUE(),
+              ord = 0, "Total Revenue",
+              ord = 1, "Total Complains",
+              ord = 2, "Total Delivery Delays"
+              )
+      ```
+      ```dax
+      _Chart Title Val = 
+      VAR target = SELECTEDVALUE('Pareto Max Val'[Pareto Max Val], 0.8)
+      VAR yaxis_ord = SELECTEDVALUE('y-axis'[y-axis Order])
+      VAR xaxis_ord = SELECTEDVALUE('x-axis'[x-axis Order])
+      VAR xaxis0 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Customer]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis1 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Product]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      VAR xaxis2 = 
+          TOPN (
+              1,
+              ADDCOLUMNS (
+                  ALLSELECTED(FactData[Supplier]),
+                  "cum%", [_CumVal %],
+                  "cum", [_CumVal],
+                  "diff", ABS ( [_CumVal %] - target )
+              ),
+              [diff], ASC
+          )
+      
+      VAR maxval =  
+          SWITCH(
+              TRUE(),
+              xaxis_ord = 0, MAXX ( xaxis0, [cum] ),
+              xaxis_ord = 1, MAXX ( xaxis1, [cum] ),
+              xaxis_ord = 2, MAXX ( xaxis2, [cum] )
+          )
+      
+      RETURN
+          SWITCH(
+              TRUE(),
+              yaxis_ord = 0, "₹" & maxval,
+              yaxis_ord = 1, FORMAT(maxval, "#"),
+              yaxis_ord = 2, maxval & " days"
+              )
+      ```
+    - ✔ Fully dynamic
+    - ✔ Metric & category aware
+    - ✔ Executive-friendly wording
+
   - s
       
 - Dynamic Pareto Bar + Line Chart
