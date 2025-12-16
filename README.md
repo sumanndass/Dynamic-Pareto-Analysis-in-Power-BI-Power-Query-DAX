@@ -24,17 +24,7 @@ Pareto (80/20) analysis is widely used to identify the vital few contributors dr
   - Produce incorrect cumulative percentages
   - Cannot dynamically highlight the “vital few”
 - This project demonstrates how to build a **fully dynamic**, **production-ready Pareto Analysis** in **Power BI**, starting from **messy CSV data**.
-## 📑 Table of Contents
-- [📘 Project Overview](#📘-Project-Overview)
-- [📂 Dataset Description](#📂-Dataset-Description)
-- [🧹 Data Cleaning Using Power Query](#🧹-Data-Cleaning-Using-Power-Query)
-- [Power Query (M) Logic Explained](#power-query-(m)-logic-explained)
-- [Data Modeling](#data-modeling)
-- [Dynamic Pareto Logic (DAX)](#dynamic-pareto-logic-(dax))
-- [Interactive Dashboard Features](#interactive-dashboard-features)
-- [Key Business Insights](#key-business-insights)
-- [Final Outcome](#final-outcome)
-### 📘 Project Overview
+## 📘 Project Overview
 Pareto analysis (80/20 rule) is a common analytical technique, but most implementations are static.
 - This project demonstrates how to build a fully dynamic Pareto dashboard in Power BI that allows users to:
   - Switch analysis between Customer / Product / Supplier
@@ -42,7 +32,7 @@ Pareto analysis (80/20 rule) is a common analytical technique, but most implemen
   - Dynamically adjust the Pareto threshold (48%–53%)
   - Automatically highlight the critical contributors
   - All calculations are measure-driven, not column-based.
-### 📂 Dataset Description
+## 📂 Dataset Description
 - [Raw Input Data (Messy)](https://github.com/sumanndass/Dynamic-Pareto-Analysis-in-Power-BI-Power-Query-DAX/blob/main/MessyParetoData.csv)
 - The original CSV file contained:
   - Duplicate records
@@ -65,7 +55,7 @@ Pareto analysis (80/20 rule) is a common analytical technique, but most implemen
   - Revenue
   - Complaints
   - Delivery Delay (days)
-### 🧹 Data Cleaning Using Power Query
+## 🧹 Data Cleaning Using Power Query
 Power Query is used as the single source of truth for all data standardization.
 - Key Cleaning Objectives
   - Normalize Customer, Product, Supplier IDs
@@ -73,7 +63,7 @@ Power Query is used as the single source of truth for all data standardization.
   - Convert invalid values (?) to clean numeric values
   - Ensure consistent formatting for reporting
   - Prepare fact-level data for Pareto logic
-### 🧠 Power Query (M) Logic Explained
+## 🧠 Power Query (M) Logic Explained
 - 1️⃣ Source
   ```m 
   = Csv.Document(File.Contents("C:\Users\user\Desktop\MessyParetoData.csv"),[Delimiter=",", Encoding=1252, QuoteStyle=QuoteStyle.None])
@@ -218,13 +208,13 @@ Power Query is used as the single source of truth for all data standardization.
     | Cust 019 | Prod L  | SUP 1    |   12000 |         25 |             20 |
     | ...      | ...     | ...      |     ... |        ... |            ... |
     ```
-### 🧩 Data Modeling
+## 🧩 Data Modeling
 - This project uses a single fact table approach:
   - Suitable for Pareto analysis
   - Avoids unnecessary complexity
   - Optimized for dynamic ranking
 - All calculations are performed using measures, not calculated columns.
-### 📐 Dynamic Pareto Logic (DAX)
+## 📐 Dynamic Pareto Logic (DAX)
 - Core Concepts Used
   - RANKX
   - ALLSELECTED
@@ -240,7 +230,7 @@ Power Query is used as the single source of truth for all data standardization.
 - ✔ Ranking updates per slicer
 - ✔ No hard-coded logic
 - ✔ No static thresholds
-### 🎛 Interactive Dashboard Features (User Controls)
+## 🎛 Interactive Dashboard Features (User Controls)
 - Category Selector
   - Customer
   - Product
@@ -251,7 +241,7 @@ Power Query is used as the single source of truth for all data standardization.
   - Total Delivery Delay
 - Pareto Threshold Selector
   - 48% – 53%
-### 📊 DAX by Visual Components
+## 📊 DAX by Visual Components
 - This section documents the exact DAX logic used for each visual in the dashboard.
 - This section documents the exact DAX logic used for each visual in the dashboard.
   - 🟦 1. Base Measures (Foundation)
@@ -813,7 +803,7 @@ Power Query is used as the single source of truth for all data standardization.
   - All logic respects filter context
   - Easily reusable for other datasets
   - Performs well at scale
-### 📊 Visual Components
+## 📊 Visual Components
 - Dynamic Pareto Bar + Line Chart
 - Highlighted critical contributors
 - Dynamic matrix showing:
@@ -822,26 +812,26 @@ Power Query is used as the single source of truth for all data standardization.
   - Cumulative %
 - Fully dynamic titles:
   - Top 5 out of 18 Customers account for 58% of Total Revenue (₹77,000)
-### 📈 Key Business Insights
+## 📈 Key Business Insights
 - From the dashboard:
   - 58% of total revenue comes from just 5 customers
   - Revenue concentration risk is clearly visible
   - Priority customers are immediately identifiable
   - Switching metrics reveals different Pareto drivers
 - This mirrors real enterprise analytics use cases.
-### ✅ Final Outcome
+## ✅ Final Outcome
 - ✔ Messy real-world data cleaned using Power Query
 - ✔ Fully dynamic Pareto analysis using DAX
 - ✔ Interactive slicers and thresholds
 - ✔ Production-quality Power BI dashboard
 - ✔ Reusable design for any Pareto scenario
-### 🚀 Conclusion
+## 🚀 Conclusion
 - This project demonstrates how Power BI + Power Query + DAX can be used to:
   - Handle dirty datasets
   - Build robust analytical logic
   - Deliver executive-ready insights
 - It goes beyond textbook Pareto charts and reflects real BI engineering practices.
-### 🔗 Possible Extensions
+## 🔗 Possible Extensions
 - Add drill-through pages
 - Convert to star schema
 - Publish as Power BI template
