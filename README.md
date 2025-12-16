@@ -287,7 +287,8 @@ Power Query is used as the single source of truth for all data standardization.
       }
       ```
       - **Note:** Category switching is implemented using field parameters / disconnected tables for visuals, while DAX relies on the selected order.
-  - Matrix Visual
+  - 🟩 Matrix Visual
+    <br>
     <img width="587" height="460" alt="image" src="https://github.com/user-attachments/assets/45a57a35-4bdb-439b-bfa5-acc37f23fdc9" />
 
     - Used in: Pareto bar chart, Matrix (Rank column), Highlight logic
