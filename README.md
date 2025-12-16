@@ -247,7 +247,28 @@ Power Query is used as the single source of truth for all data standardization.
   - Total Delivery Delay
 - Pareto Threshold Selector
   - 48% – 53%
-### 📊 Visual Components
+### 📊 DAX by Visual Components
+- This section documents the exact DAX logic used for each visual in the dashboard.
+- This section documents the exact DAX logic used for each visual in the dashboard.
+  - 🟦 1. Base Measures (Foundation)
+    - 🔹 Total Revenue
+      ```dax
+      _TotalRevenue = SUM ( FactData[Revenue] )
+      ```
+    - 🔹 Total Complaints
+      ```dax
+      _TotalComplaints = SUM ( FactData[Complaints] )
+      ```
+    - 🔹 Total Delivery Delay
+      ```dax
+      _TotalDeliveryDelay = SUM ( FactData[Delivery Delay (days)] )
+      ```
+      🔹 Dynamic Formatting
+      ```dax
+      "0 days"
+      ```
+    - s
+      
 - Dynamic Pareto Bar + Line Chart
 - Highlighted critical contributors
 - Dynamic matrix showing:
